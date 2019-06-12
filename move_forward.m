@@ -57,7 +57,23 @@ for lanes=W:-1:1
     end
     end
 end
-
+%计算大组形心及这一帧的力
+for lanes=1:W/2
+    peoplesum=nnz(grouplocation{:,lanes});
+    for p=1:L
+        if any(grouplocation{p,lanes})~=0
+            center=zeros(1,2);
+            for i=1:peoplesum
+                center(1,1)=center(1,1)+grouplocation{p,lanes}(i,1);
+                center(1,2)=center(1,2)+grouplocation{p,lanes}(i,2);
+            end
+            center(1,1)=center(1,1)/peoplesum;
+            center(1,2)=center(1,2)/peoplesum;
+        else
+            continue
+        end
+    end
+end
 %循环计算每个人的行走
 for lanes=1:W/2
         %         P=ceil(t/3);
@@ -128,12 +144,7 @@ for lanes=1:W/2
             
             
             %计算组间排斥力
-%           Uwall=U0*exp(-distance/R);
-%           syms xwall ywall
-%           Uwall=U0*exp(sqrt(xwall^2+ywall^2)/R);
-%           gradUwall=[diff(Uwall,xwall),diff(Uwall,ywall)];
-%           grad11=subs(gradUwall,{xwall,ywall},{livelocation{p,lanes}(1,1)-walllocation{wallL,wallW}(1,1),livelocation{p,lanes}(1,2) -walllocation{wallL,wallW}(1,2)});
-            
+            grouplocation
             
             %计算最终移动位置
             x=round(grouplocation{p,lanes}(1,1)+Fa(1)+FaB(1)+Fac(1)+Fad(1));
