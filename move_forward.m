@@ -23,7 +23,7 @@ nn=1;
 
 %记录plaza中的所有障碍的位置
 nn=1;
-for lanes=W:-1:1
+for lanes=1:W
     t=find(plaza(:,lanes)==-1 );
     if t~=0
         for n=1:length(t)
@@ -57,7 +57,9 @@ for lanes=W:-1:1
     end
     end
 end
-%计算大组形心及这一帧的力
+
+
+% 计算大组形心
 for lanes=1:W/2
     peoplesum=nnz(grouplocation{:,lanes});
     for p=1:L
@@ -74,6 +76,8 @@ for lanes=1:W/2
         end
     end
 end
+
+
 %循环计算每个人的行走
 for lanes=1:W/2
         %         P=ceil(t/3);
@@ -86,7 +90,7 @@ for lanes=1:W/2
             
             %计算目的地吸引力    
             ea=(fin-grouplocation{p,lanes})/sqrt((L/2-p)^2+(W-lanes)^2);%  目的地的吸引力确定移动方向
-            Fa=4*ea*va0; %目的地吸引力
+            Fa=4*ea*va0 %目的地吸引力
 
             
             %计算最近的障碍点排斥力
@@ -102,7 +106,7 @@ for lanes=1:W/2
                     end
                 end  
             end
-            FaB=3*(grouplocation{p,lanes}-nearstwall)/distance^2;  
+            FaB=3*(grouplocation{p,lanes}-nearstwall)/distance^2
             
             
             %计算最近的其他组的人的排斥力
@@ -119,7 +123,7 @@ for lanes=1:W/2
                     end
                 end
             end
-            Fad=-0.1*(grouplocation{p,lanes}-grouplocation{p1,lanes1})/pvpdistance^2;    
+            Fad=-0.1*(grouplocation{p,lanes}-grouplocation{p1,lanes1})/pvpdistance^2
             
             
             %计算同组人的吸引力及排斥力
@@ -135,8 +139,8 @@ for lanes=1:W/2
                     end
                     end
             end
-            Fac=-0.1*(2-pvpdistance)*(grouplocation{p,lanes}-grouplocation{p1,lanes})/pvpdistance^2;
-
+            Fac=-0.1*(1-pvpdistance)*(grouplocation{p,lanes}-grouplocation{p1,lanes})/pvpdistance^2
+% Fac=[0,0];
             
             
             %计算元组间的吸引力及排斥力
@@ -144,11 +148,20 @@ for lanes=1:W/2
             
             
             %计算组间排斥力
-            grouplocation
             
             %计算最终移动位置
-            x=round(grouplocation{p,lanes}(1,1)+Fa(1)+FaB(1)+Fac(1)+Fad(1));
-            y=round(grouplocation{p,lanes}(1,2)+Fa(2)+FaB(2)+Fac(2)+Fad(2));
+            step1=Fa(1)+FaB(1)+Fac(1)+Fad(1);
+            step2=Fa(2)+FaB(2)+Fac(2)+Fad(2);
+            k=abs(step1/step2);
+            if k>1
+                step1=step1/abs(step1)
+                step2=round(step2/abs(step1))
+            else 
+                step2=step2/abs(step2)
+                step1=round(step1/abs(step2))
+            end
+            x=round(grouplocation{p,lanes}(1,1)+step1)
+            y=round(grouplocation{p,lanes}(1,2)+step2)
             if y<=200  && plaza(x,y)==0 
             if plaza(grouplocation{p,lanes}(1,1),grouplocation{p,lanes}(1,2))==1
                 plaza(x,y)=1;
