@@ -2,15 +2,15 @@ clc;
 clear all;
 close all;
 
-B=60;            
-plazalength=210;  
+B=180;            
+plazalength=630;  
 h=NaN;           %¾ä±ú
 
 
 [plaza,plaza1]=create_plaza(B,plazalength);
 h=show_plaza(plaza,h,0.1);
 
-iterations=plazalength-1;   
+iterations=plazalength-1;  
 [plaza,plaza1,groupnum]=new_person(plaza,B,plaza1);
 
 size(find(plaza==1));

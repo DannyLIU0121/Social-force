@@ -59,12 +59,13 @@ for lanes=W:-1:1
 end
 
 
-% 计算大组形心
+% 计算小组形心
 for lanes=1:W/2
-    peoplesum=nnz(grouplocation{:,lanes});
+    peoplesum=0;
     for p=1:L
         if any(grouplocation{p,lanes})~=0
             center=zeros(1,2);
+            peoplesum=peoplesum+1;
             for i=1:peoplesum
                 center(1,1)=center(1,1)+grouplocation{p,lanes}(i,1);
                 center(1,2)=center(1,2)+grouplocation{p,lanes}(i,2);
@@ -106,7 +107,7 @@ for lanes=1:W/2
                     end
                 end  
             end
-            FaB=3*(grouplocation{p,lanes}-nearstwall)/distance^2
+            FaB=3*(grouplocation{p,lanes}-nearstwall)/distance^2;
             
             
             %计算最近的其他组的人的排斥力
@@ -123,7 +124,7 @@ for lanes=1:W/2
                     end
                 end
             end
-            Fad=-0.1*(grouplocation{p,lanes}-grouplocation{p1,lanes1})/pvpdistance^2
+            Fad=-0.1*(grouplocation{p,lanes}-grouplocation{p1,lanes1})/pvpdistance^2;
             
             
             %计算同组人的吸引力及排斥力
@@ -139,7 +140,7 @@ for lanes=1:W/2
                     end
                     end
             end
-            Fac=-0.1*(1-pvpdistance)*(grouplocation{p,lanes}-grouplocation{p1,lanes})/pvpdistance^2
+            Fac=-0.1*(1-pvpdistance)*(grouplocation{p,lanes}-grouplocation{p1,lanes})/pvpdistance^2;
 % Fac=[0,0];
             
             
