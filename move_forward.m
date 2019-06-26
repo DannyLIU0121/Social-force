@@ -1,10 +1,10 @@
 function [plaza,plaza1]=move_forward(plaza,plaza1,groupnum)
 [L,W]=size(plaza);
-plaza2=zeros(L,W);
+plaza2=zeros(40,140);
 % livelocation=mat2cell(plaza2,ones(L/1,1)*1,ones(W/2,1)*2);
-walllocation=mat2cell(plaza2,ones(L/1,1)*1,ones(W/2,1)*2);
-grouplocation=mat2cell(plaza2,ones(L/1,1)*1,ones(W/2,1)*2);
-groupcenter=mat2cell(plaza2,ones(L/1,1)*1,ones(W/2,1)*2);
+walllocation=mat2cell(plaza2,ones(40/1,1)*1,ones(140/2,1)*2);
+grouplocation=mat2cell(plaza2,ones(40/1,1)*1,ones(140/2,1)*2);
+groupcenter=mat2cell(plaza2,ones(40/1,1)*1,ones(140/2,1)*2);
 va0=2;%移动速度
 nn=1;
 
@@ -91,7 +91,7 @@ B=1;
 for ii=groupnum:-1:1
     %元组受到的目的地的吸引力
     ga=(fin-groupcenter{1,ii})/sqrt((L/2-groupcenter{1,ii}(1,1))^2+(W-groupcenter{1,ii}(1,2))^2);
-    Ga=4*ga*va0;
+    Ga=2*ga*va0;
     
     %计算该元组与其他元组之间的力
     gb=(groupcenter{1,1}-groupcenter{1,2})/sqrt((groupcenter{1,1}(1,1)-groupcenter{1,2}(1,1))^2+(groupcenter{1,1}(1,2)-groupcenter{1,2}(1,2))^2);
@@ -115,7 +115,7 @@ for lanes=1:W/2
             
             %计算目的地吸引力    
             ea=(fin-grouplocation{p,lanes})/sqrt((L/2-p)^2+(W-lanes)^2);%  目的地的吸引力确定移动方向
-            Fa=6*ea*va0; %目的地吸引力
+            Fa=2*ea*va0; %目的地吸引力
 
             
             %计算最近的障碍点排斥力
@@ -131,7 +131,7 @@ for lanes=1:W/2
                     end
                 end  
             end
-            FaB=2*(grouplocation{p,lanes}-nearstwall)/distance^2;
+            FaB=1*(grouplocation{p,lanes}-nearstwall)/distance^2;
             
             
             %计算最近的其他组的人的排斥力
@@ -164,13 +164,25 @@ for lanes=1:W/2
                     end
                     end
             end
-            Fac=-0.01*(2-pvpdistance)*(grouplocation{p,lanes}-grouplocation{p1,lanes})/pvpdistance^2;
+            Fac=-0.01*(1-pvpdistance)*(grouplocation{p,lanes}-grouplocation{p1,lanes})/pvpdistance^2;
 %             Fac=A*exp((sqrt((grouplocation{p,lanes}(1,1)-grouplocation{p1,lanes}(1,1))^2+(grouplocation{p,lanes}(1,2)-grouplocation{p1,lanes}(1,2))^2)-1)/B)*eac;
 % Fac=[0,0];
             
             
             %计算元组间的吸引力及排斥力
-            
+             for lanes1=[1:lanes-1,lanes+1:W/2]
+                for p1=[1:p-1,p+1:L]
+                    if grouplocation{p1,lanes1}~=0
+                    pvpdistance1=sqrt((grouplocation{p,lanes}(1,1)-grouplocation{p1,lanes1}(1,1))^2+(grouplocation{p,lanes}(1,2)-grouplocation{p1,lanes1}(1,2))^2);
+                    if pvpdistance1<pvpdistance
+                        pvpdistance=pvpdistance1;
+                    else
+                        continue;
+                    end
+                    end
+                end
+            end
+            Fae=-0.1*(grouplocation{p,lanes}-grouplocation{p1,lanes1})/pvpdistance^2;
             
             
             %计算组间排斥力
@@ -252,7 +264,7 @@ for lanes=1:W/2
             end
             
             %边界处理
-            if y<=210  && max(max(plaza1{x,y}))==0
+            if y<=45  && max(max(plaza1{x,y}))==0
                 %判断组别并赋相应值
                 if  max(max(plaza1{P,Q}))==1
                     plaza1{x,y}=X1;
@@ -267,7 +279,7 @@ for lanes=1:W/2
                      plaza1{P,Q}=zeros(3,3);
                 end
          
-            elseif y>210
+            elseif y>45
                 plaza1{P,Q}=zeros(3,3);
                 break;
             else
